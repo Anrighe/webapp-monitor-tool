@@ -1,0 +1,23 @@
+{
+    "check_interval_seconds": 30,
+    "http_timeout_seconds": 5,
+    "failure_threshold": 3,
+    "max_log_filesize": 1048576,
+    "logs_path": "logs/webapp-monitor-tool.log",
+    "smtp": {
+        "url": "url-example.com",
+        "username": "username-example",
+        "password": "password-example",
+        "from": "from@test.com"
+    },
+    "apps": [
+        {
+            "name": "orders-api",
+            "url": "http://localhost:8080/q/health/ready",
+            "admins": [
+                "admin@example.com",
+                "test@example.com"
+            ]
+        }
+    ]
+}

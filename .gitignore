@@ -1,0 +1,4 @@
+.env
+build/*
+logs/webapp-monitor-tool*
+webapp-monitor-tool
