@@ -24,7 +24,6 @@ public:
     static Config loadConfig();
     static Config loadConfig(const std::filesystem::path &path);
 
-    int get_check_interval_seconds() const;
     int get_http_timeout_seconds() const;
     int get_failure_threshold() const;
 
@@ -37,7 +36,6 @@ public:
 private:
     std::string application_name = APPLICATION_NAME;
 
-    int check_interval_seconds_;
     int http_timeout_seconds_;
     int failure_threshold_;
 

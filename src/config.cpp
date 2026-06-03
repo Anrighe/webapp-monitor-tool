@@ -8,7 +8,6 @@
 
 using json = nlohmann::json;
 
-#define DEFAULT_CHECK_INTERVAL_SECONDS 30
 #define DEFAULT_HTTP_TIMEOUT_SECONDS 5
 #define DEFAULT_FAILURE_THRESHOLD 3
 #define DEFAULT_MAX_LOG_FILESIZE_BYTE 1048576
@@ -80,7 +79,6 @@ Config Config::loadConfig(const std::filesystem::path &path) {
 
     Config config;
 
-    config.check_interval_seconds_ = root.value("check_interval_seconds", DEFAULT_CHECK_INTERVAL_SECONDS);
     config.http_timeout_seconds_ = root.value("http_timeout_seconds", DEFAULT_HTTP_TIMEOUT_SECONDS);
     config.failure_threshold_ = root.value("failure_threshold", DEFAULT_FAILURE_THRESHOLD);
     config.max_logs_filesize_byte_ = root.value("max_logs_filesize_byte", DEFAULT_MAX_LOG_FILESIZE_BYTE);
@@ -104,10 +102,6 @@ Config Config::loadConfig(const std::filesystem::path &path) {
     validate(config);
 
     return config;
-}
-
-int Config::get_check_interval_seconds() const {
-    return check_interval_seconds_;
 }
 
 int Config::get_http_timeout_seconds() const {
@@ -135,9 +129,6 @@ const std::vector<Config::App>& Config::get_apps() const {
 }
 
 void Config::validate(const Config& config) {
-    if (config.check_interval_seconds_ <= 0) {
-        throw std::runtime_error("check_interval_seconds must be greater than 0");
-    }
 
     if (config.http_timeout_seconds_ <= 0) {
         throw std::runtime_error("http_timeout_seconds must be greater than 0");
