@@ -49,6 +49,8 @@ Config::App parse_app(const json &app_json) {
     require_field(app_json, "name");
     require_field(app_json, "url");
     require_field(app_json, "admins");
+    require_field(app_json, "request_type");
+    require_field(app_json, "healthy_response_status_code");
 
     Config::App app;
     app.name = app_json.at("name").get<std::string>();
@@ -176,9 +178,34 @@ void Config::validate_app(const Config::App &app) {
         throw std::runtime_error(std::format("App '{}' must have at least one admin email", app.name));
     }
 
-    for (const std::string& admin : app.admins) {
-        if (admin.empty()) {
-            throw std::runtime_error(std::format("App '{}' has an empty admin email", app.name));
+    if (!is_valid_request_type(app.request_type)) {
+        throw std::runtime_error(std::format("App '{}' has an invalid request type '{}'", app.name, app.request_type));
+    }
+
+    if (app.healthy_response_status_code < 200 || app.healthy_response_status_code > 599) {
+        throw std::runtime_error(std::format("App '{}' has an invalid healthy response status code '{}'", app.name, app.healthy_response_status_code));
+    }
+
+    for (const std::string& admin_email : app.admins) {
+        if (!is_email_valid(admin_email)) {
+            throw std::runtime_error(std::format("App '{}' has an invalid admin email: '{}'", app.name, admin_email));
         }
     }
+}
+
+bool Config::is_valid_request_type(const std::string &request_type) {
+    return request_type == "GET" ||
+           request_type == "POST" ||
+           request_type == "PUT" ||
+           request_type == "DELETE" ||
+           request_type == "PATCH" ||
+           request_type == "OPTIONS" ||
+           request_type == "HEAD";
+}
+
+bool Config::is_email_valid(const std::string &email) {
+    static const std::regex pattern(
+        R"(^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$)"
+    );
+    return std::regex_match(email, pattern);
 }

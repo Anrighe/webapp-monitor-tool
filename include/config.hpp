@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <filesystem>
+#include <regex>
 
 #define APPLICATION_NAME "Webapp monitor tool"
 
@@ -19,6 +20,8 @@ public:
         std::string name;
         std::string url;
         std::vector<std::string> admins;
+        std::string request_type;
+        int healthy_response_status_code;
     };
 
     static Config loadConfig();
@@ -47,5 +50,7 @@ private:
 
     static void validate(const Config &config);
     static void validate_app(const App &app);
+    static bool is_email_valid(const std::string &email);
+    static bool is_valid_request_type(const std::string &request_type);
     static std::filesystem::path resolve_path_from_current_directory(const std::filesystem::path& path);
 };
