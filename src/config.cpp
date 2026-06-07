@@ -51,11 +51,17 @@ Config::App parse_app(const json &app_json) {
     require_field(app_json, "admins");
     require_field(app_json, "request_type");
     require_field(app_json, "healthy_response_status_code");
+    require_field(app_json, "timeout_seconds");
+    require_field(app_json, "max_retries");
 
     Config::App app;
     app.name = app_json.at("name").get<std::string>();
     app.url = app_json.at("url").get<std::string>();
     app.admins = app_json.at("admins").get<std::vector<std::string>>();
+    app.request_type = app_json.at("request_type").get<std::string>();
+    app.healthy_response_status_code = app_json.at("healthy_response_status_code").get<int>();
+    app.timeout_seconds = app_json.at("timeout_seconds").get<int>();
+    app.max_retries = app_json.at("max_retries").get<int>();
 
     return app;
 }
@@ -81,8 +87,6 @@ Config Config::loadConfig(const std::filesystem::path &path) {
 
     Config config;
 
-    config.http_timeout_seconds_ = root.value("http_timeout_seconds", DEFAULT_HTTP_TIMEOUT_SECONDS);
-    config.failure_threshold_ = root.value("failure_threshold", DEFAULT_FAILURE_THRESHOLD);
     config.max_logs_filesize_byte_ = root.value("max_logs_filesize_byte", DEFAULT_MAX_LOG_FILESIZE_BYTE);
     config.logs_path_ = resolve_path_from_current_directory(root.value("logs_path", DEFAULT_LOGS_PATH));
 
@@ -106,14 +110,6 @@ Config Config::loadConfig(const std::filesystem::path &path) {
     return config;
 }
 
-int Config::get_http_timeout_seconds() const {
-    return http_timeout_seconds_;
-}
-
-int Config::get_failure_threshold() const {
-    return failure_threshold_;
-}
-
 int Config::get_max_logs_filesize_byte() const {
     return max_logs_filesize_byte_;
 }
@@ -131,14 +127,6 @@ const std::vector<Config::App>& Config::get_apps() const {
 }
 
 void Config::validate(const Config& config) {
-
-    if (config.http_timeout_seconds_ <= 0) {
-        throw std::runtime_error("http_timeout_seconds must be greater than 0");
-    }
-
-    if (config.failure_threshold_<= 0) {
-        throw std::runtime_error("failure_threshold must be greater than 0");
-    }
 
     if (config.smtp_.url.empty()) {
         throw std::runtime_error("smtp.url cannot be empty");
@@ -184,6 +172,14 @@ void Config::validate_app(const Config::App &app) {
 
     if (app.healthy_response_status_code < 200 || app.healthy_response_status_code > 599) {
         throw std::runtime_error(std::format("App '{}' has an invalid healthy response status code '{}'", app.name, app.healthy_response_status_code));
+    }
+
+    if (app.timeout_seconds <= 0) {
+        throw std::runtime_error("timeout_seconds cannot be negative");
+    }
+
+    if (app.max_retries < 0) {
+        throw std::runtime_error("max_retries cannot be negative");
     }
 
     for (const std::string& admin_email : app.admins) {

@@ -1,22 +1,37 @@
 #pragma once
 
 #include <string>
+#include <unordered_map>
+#include <chrono>
+#include <thread>
+
+#include "libraries/nlohmann/json.hpp"
+
+using json = nlohmann::json;
 
 class IEndpointMonitor
 {
 public:
-    struct Response
-    {
-        bool success;
-        int status_code;
-        std::string body;
-        std::string error_message;
-        int attempts_used;
+    enum class RequestType {
+        GET,
+        POST,
+        PUT,
+        DELETE,
+        PATCH,
+        OPTIONS,
+        HEAD
     };
 
-    struct Settings
-    {
+    struct Response {
+        bool success = false;
+        int status_code = 0;
+        json body = json::object();
+        std::string status_message = "";
+    };
+
+    struct Settings {
         std::string host;
+        RequestType request_type;
         int timeout_seconds;
         int max_retries;
         int healthy_response_status_code;
@@ -25,6 +40,27 @@ public:
 protected:
     int current_retry = 0;
     Settings settings;
+
+private:
+    inline static const std::unordered_map<std::string, RequestType> string_to_request_types_map = {
+        {"GET", RequestType::GET},
+        {"POST", RequestType::POST},
+        {"PUT", RequestType::PUT},
+        {"DELETE", RequestType::DELETE},
+        {"PATCH", RequestType::PATCH},
+        {"OPTIONS", RequestType::OPTIONS},
+        {"HEAD", RequestType::HEAD}
+    };
+
+    inline static const std::unordered_map<RequestType, std::string> request_types_to_string_map = {
+        {RequestType::GET, "GET"},
+        {RequestType::POST, "POST"},
+        {RequestType::PUT, "PUT"},
+        {RequestType::DELETE, "DELETE"},
+        {RequestType::PATCH, "PATCH"},
+        {RequestType::OPTIONS, "OPTIONS"},
+        {RequestType::HEAD, "HEAD"}
+    };
 
 public:
     virtual ~IEndpointMonitor() = default;
@@ -40,9 +76,11 @@ public:
 
     bool health_check(const std::string &path);
 
+    static std::optional<RequestType> parse_request_type(const std::string &request_type);
+    static std::optional<std::string> request_type_to_string(const RequestType requestType);
+
 protected:
     virtual Response perform_request(const std::string &path) = 0;
-    virtual Response parse_response(const std::string &response);
     virtual bool is_response_valid(const Response &response) const;
 
 private:

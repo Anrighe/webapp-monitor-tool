@@ -22,13 +22,13 @@ public:
         std::vector<std::string> admins;
         std::string request_type;
         int healthy_response_status_code;
+        int timeout_seconds;
+        int max_retries;
     };
 
     static Config loadConfig();
     static Config loadConfig(const std::filesystem::path &path);
 
-    int get_http_timeout_seconds() const;
-    int get_failure_threshold() const;
 
     int get_max_logs_filesize_byte() const;
     std::filesystem::path get_logs_path() const;
@@ -38,9 +38,6 @@ public:
 
 private:
     std::string application_name = APPLICATION_NAME;
-
-    int http_timeout_seconds_;
-    int failure_threshold_;
 
     int max_logs_filesize_byte_;
     std::filesystem::path logs_path_;

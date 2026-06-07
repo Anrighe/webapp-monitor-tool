@@ -1,6 +1,4 @@
 {
-    "http_timeout_seconds": 10,
-    "failure_threshold": 3,
     "max_log_filesize": 1048576,
     "logs_path": "logs/webapp-monitor-tool.log",
     "smtp": {
@@ -18,7 +16,9 @@
                 "test@example.com"
             ],
             "request_type": "GET",
-            "healthy_response_status_code": 200
+            "healthy_response_status_code": 200,
+            "timeout_seconds": 10,
+            "max_retries": 3
         }
     ]
 }
