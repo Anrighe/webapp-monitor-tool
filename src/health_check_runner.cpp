@@ -34,7 +34,7 @@ void HealthCheckRunner::run(const Config &config) {
                 result.status_codes | std::views::transform([](int code) { return std::to_string(code); }) | std::views::join_with(std::string_view{", "}) | std::ranges::to<std::string>(),
                 result.retries,
                 result.latencies_ms | std::views::transform([](double latency_ms) { return std::to_string(latency_ms); }) | std::views::join_with(std::string_view{", "}) | std::ranges::to<std::string>(),
-                result.status_messages | std::views::filter([](const std::string& s) {  return !s.empty();})| std::views::join_with(std::string_view{", "}) | std::ranges::to<std::string>()
+                result.status_messages | std::views::filter([](const std::string &s) { return !s.empty();})| std::views::join_with(std::string_view{", "}) | std::ranges::to<std::string>()
             );
         }
     }

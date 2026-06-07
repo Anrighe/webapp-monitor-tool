@@ -16,7 +16,7 @@ using json = nlohmann::json;
 #define DEFAULT_CONFIG_PATH "config.json"
 
 std::filesystem::path Config::resolve_path_from_current_directory(
-    const std::filesystem::path& path
+    const std::filesystem::path &path
 ) {
     if (path.is_absolute()) {
         return path;
@@ -31,7 +31,7 @@ void require_field(const json &object, const std::string &field_name) {
     }
 }
 
-Config::Smtp parse_smtp(const json& smtp_json) {
+Config::Smtp parse_smtp(const json &smtp_json) {
     require_field(smtp_json, "url");
     require_field(smtp_json, "username");
     require_field(smtp_json, "password");
@@ -95,7 +95,7 @@ Config Config::loadConfig(const std::filesystem::path &path) {
 
     try {
         file>>root;
-    } catch (const json::parse_error& error) {
+    } catch (const json::parse_error &error) {
         throw std::runtime_error(std::format("Invalid JSON in config file '{}': {}", path.string(), std::string(error.what())));
     }
 
@@ -115,7 +115,7 @@ Config Config::loadConfig(const std::filesystem::path &path) {
         throw std::runtime_error("Config field 'apps' must be an array");
     }
 
-    for (const json& app_json : appsJson) {
+    for (const json &app_json : appsJson) {
         config.apps_.push_back(parse_app(app_json));
     }
 
@@ -132,15 +132,15 @@ std::filesystem::path Config::get_logs_path() const {
     return logs_path_;
 }
 
-const Config::Smtp& Config::get_smtp() const {
+const Config::Smtp &Config::get_smtp() const {
     return smtp_;
 }
 
-const std::vector<Config::App>& Config::get_apps() const {
+const std::vector<Config::App> &Config::get_apps() const {
     return apps_;
 }
 
-void Config::validate(const Config& config) {
+void Config::validate(const Config &config) {
 
     if (config.smtp_.url.empty()) {
         throw std::runtime_error("smtp.url cannot be empty");
@@ -162,7 +162,7 @@ void Config::validate(const Config& config) {
         throw std::runtime_error("Config must contain at least one app");
     }
 
-    for (const App& app : config.apps_) {
+    for (const App &app : config.apps_) {
         validate_app(app);
     }
 }
@@ -200,7 +200,7 @@ void Config::validate_app(const Config::App &app) {
         throw std::runtime_error("max_retries cannot be negative");
     }
 
-    for (const std::string& admin_email : app.admins) {
+    for (const std::string &admin_email : app.admins) {
         if (!is_email_valid(admin_email)) {
             throw std::runtime_error(std::format("App '{}' has an invalid admin email: '{}'", app.name, admin_email));
         }

@@ -14,12 +14,27 @@ using MonitorFactory = std::function<std::unique_ptr<IEndpointMonitor>(const Con
 
 class HealthCheckRunner {
 public:
+
+    /**
+     * @param logger Shared logger instance
+     * @param monitor_factory Factory function that creates a monitor per app
+     */
     explicit HealthCheckRunner(std::shared_ptr<spdlog::logger> logger, MonitorFactory monitor_factory);
+
+    /**
+     * Builds monitors for all configured apps and runs a health check on each
+     * @param config Loaded application configuration
+     */
     void run(const Config &config);
 
 private:
     std::shared_ptr<spdlog::logger> logger;
     MonitorFactory monitor_factory;
 
+    /**
+     * Instantiates a monitor for each app in the config using the monitor factory
+     * @param config Loaded application configuration
+     * @return List of owning pointers to the constructed monitors
+     */
     std::vector<std::unique_ptr<IEndpointMonitor>> build_monitors(const Config &config);
 };

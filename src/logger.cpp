@@ -9,7 +9,7 @@
 #include <stdexcept>
 
 std::shared_ptr<spdlog::logger> Logger::initialize(
-    const std::filesystem::path& log_path,
+    const std::filesystem::path &log_path,
     int max_size_bytes
 ) {
     if (max_size_bytes <= 0) {
@@ -42,7 +42,7 @@ std::shared_ptr<spdlog::logger> Logger::initialize(
     return logger;
 }
 
-void Logger::ensure_log_file_exists(const std::filesystem::path& log_path) {
+void Logger::ensure_log_file_exists(const std::filesystem::path &log_path) {
     const std::filesystem::path parent_path = log_path.parent_path();
 
     if (!parent_path.empty()) {

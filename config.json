@@ -18,7 +18,7 @@
             ],
             "request_type": "GET",
             "healthy_response_status_code": 200,
-            "timeout_seconds": 1,
+            "timeout_seconds": 5,
             "max_retries": 3
         }
     ]

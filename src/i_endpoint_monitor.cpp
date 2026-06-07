@@ -1,6 +1,6 @@
 #include "../include/i_endpoint_monitor.hpp"
 
-IEndpointMonitor::IEndpointMonitor(const Settings& settings): settings(settings) {}
+IEndpointMonitor::IEndpointMonitor(const Settings &settings): settings(settings) {}
 
 void IEndpointMonitor::increase_current_retry() {
     ++current_retry;
@@ -14,7 +14,7 @@ void IEndpointMonitor::reset_current_retry() {
     current_retry = 0;
 }
 
-bool IEndpointMonitor::is_response_valid(const Response& response) const {
+bool IEndpointMonitor::is_response_valid(const Response &response) const {
     return response.success && is_response_status_code_healthy(response.status_code);
 }
 
@@ -44,7 +44,6 @@ std::optional<std::string> IEndpointMonitor::request_type_to_string(const IEndpo
 }
 
 HealthCheckResult IEndpointMonitor::health_check() {
-    std::chrono::_V2::system_clock::time_point start = std::chrono::high_resolution_clock::now();
 
     reset_current_retry();
     bool first_request = true;
@@ -64,14 +63,17 @@ HealthCheckResult IEndpointMonitor::health_check() {
         } else {
             first_request = false;
         }
-
         increase_current_retry();
 
+        std::chrono::_V2::system_clock::time_point start = std::chrono::high_resolution_clock::now();
+
         const Response response = perform_request(settings.url, settings.path);
+        
+        std::chrono::_V2::system_clock::time_point end = std::chrono::high_resolution_clock::now();
+        
         response_status_codes.emplace_back(response.status_code);
         status_messages.emplace_back(response.status_message);
 
-        std::chrono::_V2::system_clock::time_point end = std::chrono::high_resolution_clock::now();
         latencies_ms.emplace_back(std::chrono::duration<double, std::milli>(end - start).count());
 
         if (is_response_valid(response)) {
