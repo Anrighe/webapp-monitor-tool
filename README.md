@@ -5,7 +5,7 @@ A lightweight health-check tool that monitors HTTP endpoints and logs their avai
 ## Features
 
 - Periodic health checks for HTTP endpoints
-- Config-driven setup (JSON)
+- Configurable settings
 - Retry & timeout support
 - Latency tracking
 - Logging
@@ -68,7 +68,7 @@ Example config.json:
 
 ## Extensibility
 
-To support other protocols, implement:
+To support other protocols (e.g., HTTPS), implement:
 
 ```C++
 class MyCustomMonitor : public IEndpointMonitor {
@@ -76,4 +76,3 @@ class MyCustomMonitor : public IEndpointMonitor {
     HttpEndpointMonitor::parse_response(const httplib::Result &result) override;
 };
 ```
-
