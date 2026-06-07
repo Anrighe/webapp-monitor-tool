@@ -10,14 +10,15 @@
     "apps": [
         {
             "name": "orders-api",
-            "url": "http://localhost:8080/q/health/ready",
+            "url": "http://localhost:8080",
+            "path": "/q/health/ready",
             "admins": [
                 "admin@example.com",
                 "test@example.com"
             ],
             "request_type": "GET",
             "healthy_response_status_code": 200,
-            "timeout_seconds": 10,
+            "timeout_seconds": 1,
             "max_retries": 3
         }
     ]

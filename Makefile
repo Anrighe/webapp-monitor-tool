@@ -6,7 +6,7 @@ SRC_DIR := src
 INC_DIR := include
 BUILD_DIR := build
 
-SOURCES := $(SRC_DIR)/main.cpp $(SRC_DIR)/config.cpp $(SRC_DIR)/logger.cpp $(SRC_DIR)/requester.cpp $(SRC_DIR)/i_endpoint_monitor.cpp $(SRC_DIR)/http_endpoint_monitor.cpp
+SOURCES := $(SRC_DIR)/main.cpp $(SRC_DIR)/config.cpp $(SRC_DIR)/logger.cpp $(SRC_DIR)/i_endpoint_monitor.cpp $(SRC_DIR)/http_endpoint_monitor.cpp $(SRC_DIR)/health_check_runner.cpp
 OBJECTS := $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SOURCES))
 
 CXXFLAGS := -std=c++23 -Wall -Wextra -Wpedantic -Iinclude -Iinclude/libraries

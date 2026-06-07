@@ -6,6 +6,7 @@
 #include <thread>
 
 #include "libraries/nlohmann/json.hpp"
+#include "health_check_result.hpp"
 
 using json = nlohmann::json;
 
@@ -30,7 +31,8 @@ public:
     };
 
     struct Settings {
-        std::string host;
+        std::string url;
+        std::string path;
         RequestType request_type;
         int timeout_seconds;
         int max_retries;
@@ -66,6 +68,7 @@ public:
     virtual ~IEndpointMonitor() = default;
 
     IEndpointMonitor() = default;
+    IEndpointMonitor(const Settings& s);
 
     // Forbidding copying and moving this base class
     IEndpointMonitor(const IEndpointMonitor &other) = delete;
@@ -74,13 +77,13 @@ public:
     IEndpointMonitor(IEndpointMonitor &&other) = delete;
     IEndpointMonitor& operator=(IEndpointMonitor &&other) = delete;
 
-    bool health_check(const std::string &path);
+    HealthCheckResult health_check();
 
     static std::optional<RequestType> parse_request_type(const std::string &request_type);
     static std::optional<std::string> request_type_to_string(const RequestType requestType);
 
 protected:
-    virtual Response perform_request(const std::string &path) = 0;
+    virtual Response perform_request(const std::string &url, const std::string &path) = 0;
     virtual bool is_response_valid(const Response &response) const;
 
 private:

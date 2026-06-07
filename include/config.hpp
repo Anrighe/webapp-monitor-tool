@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <string>
 #include <vector>
 #include <filesystem>
@@ -19,6 +20,7 @@ public:
     struct App {
         std::string name;
         std::string url;
+        std::string path;
         std::vector<std::string> admins;
         std::string request_type;
         int healthy_response_status_code;
@@ -37,7 +39,7 @@ public:
     const std::vector<App> &get_apps() const;
 
 private:
-    std::string application_name = APPLICATION_NAME;
+    std::string application_name_ = APPLICATION_NAME;
 
     int max_logs_filesize_byte_;
     std::filesystem::path logs_path_;

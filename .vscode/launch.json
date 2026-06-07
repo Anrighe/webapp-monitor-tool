@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "WSL Debug (GDB native)",
+            "type": "cppdbg",
+            "request": "launch",
+
+            "program": "${workspaceFolder}/webapp-monitor-tool",
+            "cwd": "${workspaceFolder}",
+
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+
+            "preLaunchTask": "make debug",
+
+            "stopAtEntry": true,
+            "externalConsole": false
+        }
+    ]
+}

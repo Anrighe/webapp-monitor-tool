@@ -3,6 +3,7 @@
 #include <format>
 #include <fstream>
 #include <stdexcept>
+#include <ranges>
 
 #include "../include/libraries/nlohmann/json.hpp"
 
@@ -48,6 +49,7 @@ Config::Smtp parse_smtp(const json& smtp_json) {
 Config::App parse_app(const json &app_json) {
     require_field(app_json, "name");
     require_field(app_json, "url");
+    require_field(app_json, "path");
     require_field(app_json, "admins");
     require_field(app_json, "request_type");
     require_field(app_json, "healthy_response_status_code");
@@ -57,12 +59,24 @@ Config::App parse_app(const json &app_json) {
     Config::App app;
     app.name = app_json.at("name").get<std::string>();
     app.url = app_json.at("url").get<std::string>();
+    app.path = app_json.at("path").get<std::string>();
     app.admins = app_json.at("admins").get<std::vector<std::string>>();
     app.request_type = app_json.at("request_type").get<std::string>();
     app.healthy_response_status_code = app_json.at("healthy_response_status_code").get<int>();
     app.timeout_seconds = app_json.at("timeout_seconds").get<int>();
     app.max_retries = app_json.at("max_retries").get<int>();
 
+    std::cout<<std::format(
+        "Loaded App '{}', url: '{}', path '{}' admins: '{}', request_type: '{}', healthy_response_status_code: '{}', timeout_seconds: '{}', max_retries: '{}'\n",
+        app.name,
+        app.url,
+        app.path,
+        app.admins | std::views::join_with(std::string_view{", "}) | std::ranges::to<std::string>(),
+        app.request_type,
+        app.healthy_response_status_code,
+        app.timeout_seconds,
+        app.max_retries
+    );
     return app;
 }
 
@@ -160,6 +174,10 @@ void Config::validate_app(const Config::App &app) {
 
     if (app.url.empty()) {
         throw std::runtime_error(std::format("App '{}' has an empty url", app.name));
+    }
+
+    if (app.path.empty()) {
+        throw std::runtime_error(std::format("App '{}' has an empty path", app.name));
     }
 
     if (app.admins.empty()) {
