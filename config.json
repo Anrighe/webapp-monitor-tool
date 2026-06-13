@@ -2,14 +2,14 @@
     "max_log_filesize": 1048576,
     "logs_path": "logs/webapp-monitor-tool.log",
     "smtp": {
-        "url": "url-example.com",
+        "url": "smtp://url-example.com:port",
         "username": "username-example",
         "password": "password-example",
         "from": "from@test.com"
     },
     "apps": [
         {
-            "name": "orders-api",
+            "name": "test-app",
             "url": "http://localhost:8080",
             "path": "/q/health/ready",
             "active": true,

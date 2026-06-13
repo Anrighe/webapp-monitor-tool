@@ -100,7 +100,7 @@ class MyCustomMonitor : public IEndpointMonitor {
 
 ## Example Output
 
-```console
+```bash
 user:~/C++/webapp-monitor-tool$ ./webapp-monitor-tool
 -------------------------------- Parsing apps --------------------------------
 Loaded App 'orders-api':

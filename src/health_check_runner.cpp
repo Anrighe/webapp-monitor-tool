@@ -2,8 +2,9 @@
 
 HealthCheckRunner::HealthCheckRunner(
     std::shared_ptr<spdlog::logger> logger,
-    MonitorFactory monitor_factory
-): logger(std::move(logger)), monitor_factory(monitor_factory) {}
+    MonitorFactory monitor_factory,
+    std::shared_ptr<EmailSender> email_sender
+): logger(std::move(logger)), monitor_factory(monitor_factory), email_sender(email_sender) {}
 
 void HealthCheckRunner::run(const Config &config) {
     std::vector<std::unique_ptr<IEndpointMonitor>> monitors = build_monitors(config);
@@ -27,6 +28,11 @@ void HealthCheckRunner::run(const Config &config) {
                 result.retries,
                 result.latencies_ms | std::views::transform([](double latency_ms) { return std::to_string(latency_ms); }) | std::views::join_with(std::string_view{", "}) | std::ranges::to<std::string>()
             );
+
+            // TODO: handle recipients, subject and body automatically
+            std::vector<std::string> recipients_test;
+            recipients_test.emplace_back("test@test.com");
+            email_sender->send_email(recipients_test, "TEST", "TEST BODY");
         } else {
             logger->warn(
                 "[ {} ] '{}{}' | status codes='{}' | retries: '{}' | latencies: '{}' ms | status messages: '{}'",

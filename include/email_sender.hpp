@@ -42,7 +42,7 @@ private:
 
 public:
 
-    EmailSender(std::string smtp_url, std::string username, std::string password, std::string email_sender, std::shared_ptr<spdlog::logger> logger)
+    EmailSender(const std::string &smtp_url, const std::string &username, const std::string &password, const std::string &email_sender, std::shared_ptr<spdlog::logger> logger)
         :   smtp_url(std::move(smtp_url)),
             username(std::move(username)),
             password(std::move(password)),

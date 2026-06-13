@@ -74,6 +74,12 @@ bool EmailSender::send_email(
 
     const std::string formatted_sender = "<" + email_sender + ">";
 
+    char error_buffer[CURL_ERROR_SIZE] = {0};
+
+    curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, error_buffer);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 30L);
+    curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 10L);
+
     curl_easy_setopt(curl, CURLOPT_URL, smtp_url.c_str());
     curl_easy_setopt(curl, CURLOPT_USERNAME, username.c_str());
     curl_easy_setopt(curl, CURLOPT_PASSWORD, password.c_str());
@@ -88,6 +94,16 @@ bool EmailSender::send_email(
     curl_easy_setopt(curl, CURLOPT_USE_SSL, CURLUSESSL_ALL);
 
     const CURLcode result = curl_easy_perform(curl);
+
+    if (result != CURLE_OK) {
+        logger->error(
+            "Failed to send email. CURLcode: {} | Error: {}",
+            static_cast<int>(result),
+            error_buffer[0] ? error_buffer : curl_easy_strerror(result)
+        );
+    } else {
+        logger->info("Email sent successfully");
+    }
 
     curl_slist_free_all(recipient_list);
     curl_easy_cleanup(curl);

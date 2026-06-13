@@ -10,6 +10,7 @@
 #include "spdlog/logger.h"
 #include "config.hpp"
 #include "text_formatter.hpp"
+#include "../include/email_sender.hpp"
 
 using MonitorFactory = std::function<std::unique_ptr<IEndpointMonitor>(const Config::App&)>;
 
@@ -20,7 +21,7 @@ public:
      * @param logger Shared logger instance
      * @param monitor_factory Factory function that creates a monitor per app
      */
-    explicit HealthCheckRunner(std::shared_ptr<spdlog::logger> logger, MonitorFactory monitor_factory);
+    explicit HealthCheckRunner(std::shared_ptr<spdlog::logger> logger, MonitorFactory monitor_factory, std::shared_ptr<EmailSender> email_sender);
 
     /**
      * Builds monitors for all configured apps and runs a health check on each
@@ -31,6 +32,7 @@ public:
 private:
     std::shared_ptr<spdlog::logger> logger;
     MonitorFactory monitor_factory;
+    std::shared_ptr<EmailSender> email_sender;
 
     /**
      * Instantiates a monitor for each app in the config using the monitor factory

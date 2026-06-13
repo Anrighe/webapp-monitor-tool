@@ -8,6 +8,7 @@
 #include "../include/http_endpoint_monitor.hpp"
 #include "../include/health_check_runner.hpp"
 #include "../include/text_formatter.hpp"
+#include "../include/email_sender.hpp"
 
 
 #define CONFIG_FILE_NAME "config.json"
@@ -52,9 +53,18 @@ int main() {
         );
         logger->info("Config loaded successfully");
 
+        std::shared_ptr<EmailSender> email_sender = std::make_shared<EmailSender>(
+            config->get_smtp().url,
+            config->get_smtp().username,
+            config->get_smtp().password,
+            config->get_smtp().from,
+            logger
+        );
+
         HealthCheckRunner runner(
             logger,
-            [&](const Config::App &app) { return create_http_monitor(app, logger); }
+            [&](const Config::App &app) { return create_http_monitor(app, logger); },
+            email_sender
         );
         logger->info("Runner created successfully");
 
