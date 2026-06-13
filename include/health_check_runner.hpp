@@ -9,6 +9,7 @@
 #include "health_check_result.hpp"
 #include "spdlog/logger.h"
 #include "config.hpp"
+#include "text_formatter.hpp"
 
 using MonitorFactory = std::function<std::unique_ptr<IEndpointMonitor>(const Config::App&)>;
 

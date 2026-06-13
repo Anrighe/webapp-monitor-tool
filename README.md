@@ -2,6 +2,16 @@
 
 A lightweight health-check tool that monitors HTTP endpoints and logs their availability, response status, and latency
 
+- [WebApp Monitor Tool](#webapp-monitor-tool)
+  - [Features](#features)
+  - [Requirements](#requirements)
+    - [Install libcurl on Debian/Ubuntu](#install-libcurl-on-debianubuntu)
+  - [Build](#build)
+  - [Configuration](#configuration)
+  - [How It Works](#how-it-works)
+  - [Extensibility](#extensibility)
+  - [Example Output](#example-output)
+
 ## Features
 
 - Periodic health checks for HTTP endpoints
@@ -19,6 +29,15 @@ A lightweight health-check tool that monitors HTTP endpoints and logs their avai
   - spdlog
   - nlohmann/json
   - cpp-httplib
+  - libcurl
+
+### Install libcurl on Debian/Ubuntu
+
+```bash
+sudo apt install libcurl4-openssl-dev
+```
+
+The other dependencies are header-only and included in the `include/` directory, so no additional installation is required for them.
 
 ## Build
 
@@ -44,7 +63,9 @@ Example config.json:
   "apps": [
     {
       "name": "orders-api",
-      "url": "http://localhost:8080/q/health/ready",
+      "url": "http://localhost:8080",
+      "path": "/q/health/ready",
+      "active": true,
       "admins": [
         "admin@example.com"
       ],
@@ -75,4 +96,26 @@ class MyCustomMonitor : public IEndpointMonitor {
     Response perform_request(const std::string& path) override;
     HttpEndpointMonitor::parse_response(const httplib::Result &result) override;
 };
+```
+
+## Example Output
+
+```console
+user:~/C++/webapp-monitor-tool$ ./webapp-monitor-tool
+-------------------------------- Parsing apps --------------------------------
+Loaded App 'orders-api':
+       url: 'http://localhost:8080'
+       path: '/q/health/ready'
+       active: 'true'
+       admins: 'admin@example.com, test@example.com'
+       request_type: 'GET'
+       healthy_response_status_code: '200'
+       timeout_seconds: '5'
+       max_retries: '3'
+
+[ OK ] Config file parsing 
+[ OK ] Config validation
+[2026-06-13 22:27:04] [webapp-monitor-tool] [info] Config loaded successfully
+[2026-06-13 22:27:04] [webapp-monitor-tool] [info] Runner created successfully
+[2026-06-13 22:27:04] [webapp-monitor-tool] [info] [ OK ] 'http://localhost:8080/q/health/ready' | status codes: '200' | retries: '1' | latencies: '0.591017' ms
 ```

@@ -50,6 +50,7 @@ Config::App parse_app(const json &app_json) {
     require_field(app_json, "name");
     require_field(app_json, "url");
     require_field(app_json, "path");
+    require_field(app_json, "active");
     require_field(app_json, "admins");
     require_field(app_json, "request_type");
     require_field(app_json, "healthy_response_status_code");
@@ -60,6 +61,7 @@ Config::App parse_app(const json &app_json) {
     app.name = app_json.at("name").get<std::string>();
     app.url = app_json.at("url").get<std::string>();
     app.path = app_json.at("path").get<std::string>();
+    app.active = app_json.at("active").get<bool>();
     app.admins = app_json.at("admins").get<std::vector<std::string>>();
     app.request_type = app_json.at("request_type").get<std::string>();
     app.healthy_response_status_code = app_json.at("healthy_response_status_code").get<int>();
@@ -67,16 +69,18 @@ Config::App parse_app(const json &app_json) {
     app.max_retries = app_json.at("max_retries").get<int>();
 
     std::cout<<std::format(
-        "Loaded App '{}', url: '{}', path '{}' admins: '{}', request_type: '{}', healthy_response_status_code: '{}', timeout_seconds: '{}', max_retries: '{}'\n",
-        app.name,
+        "Loaded App '{}'\n\turl: '{}'\n\tpath: '{}'\n\tactive: '{}'\n\tadmins: '{}'\n\trequest_type: '{}'\n\thealthy_response_status_code: '{}'\n\ttimeout_seconds: '{}'\n\tmax_retries: '{}'\n",
+        TextFormatter::format_light_blue(app.name),
         app.url,
         app.path,
+        app.active,
         app.admins | std::views::join_with(std::string_view{", "}) | std::ranges::to<std::string>(),
         app.request_type,
         app.healthy_response_status_code,
         app.timeout_seconds,
         app.max_retries
     );
+    std::cout<<TextFormatter::make_separator()<<"\n";
     return app;
 }
 
@@ -115,12 +119,15 @@ Config Config::loadConfig(const std::filesystem::path &path) {
         throw std::runtime_error("Config field 'apps' must be an array");
     }
 
+    std::cout<<TextFormatter::make_separator("Parsing apps")<<"\n";
     for (const json &app_json : appsJson) {
         config.apps_.push_back(parse_app(app_json));
     }
+    std::cout<<std::format("[ {} ] Config file parsing\n", TextFormatter::format_green("OK"));
 
     validate(config);
-
+    std::cout<<std::format("[ {} ] Config validation\n", TextFormatter::format_green("OK"));
+    
     return config;
 }
 

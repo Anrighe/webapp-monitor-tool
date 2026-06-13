@@ -12,6 +12,7 @@
             "name": "orders-api",
             "url": "http://localhost:8080",
             "path": "/q/health/ready",
+            "active": true,
             "admins": [
                 "admin@example.com",
                 "test@example.com"

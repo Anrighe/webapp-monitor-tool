@@ -7,6 +7,7 @@
 #include "../include/libraries/spdlog/logger.h"
 #include "../include/http_endpoint_monitor.hpp"
 #include "../include/health_check_runner.hpp"
+#include "../include/text_formatter.hpp"
 
 
 #define CONFIG_FILE_NAME "config.json"
@@ -60,7 +61,7 @@ int main() {
         runner.run(*config);
 
     } catch (const std::exception &e) {
-        std::cerr<<"Init failed: "<<e.what()<<std::endl;
+        std::cerr<<"Init failed: "<<TextFormatter::format_red(e.what())<<std::endl;
         return 1;
     }
 

@@ -6,10 +6,12 @@ SRC_DIR := src
 INC_DIR := include
 BUILD_DIR := build
 
-SOURCES := $(SRC_DIR)/main.cpp $(SRC_DIR)/config.cpp $(SRC_DIR)/logger.cpp $(SRC_DIR)/i_endpoint_monitor.cpp $(SRC_DIR)/http_endpoint_monitor.cpp $(SRC_DIR)/health_check_runner.cpp
+SOURCES := $(SRC_DIR)/main.cpp $(SRC_DIR)/config.cpp $(SRC_DIR)/logger.cpp $(SRC_DIR)/i_endpoint_monitor.cpp $(SRC_DIR)/http_endpoint_monitor.cpp $(SRC_DIR)/health_check_runner.cpp $(SRC_DIR)/email_sender.cpp
 OBJECTS := $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SOURCES))
 
 CXXFLAGS := -std=c++23 -Wall -Wextra -Wpedantic -Iinclude -Iinclude/libraries
+
+LDLIBS = -lcurl
 
 
 .PHONY: all clean run debug release
@@ -23,7 +25,7 @@ debug: CXXFLAGS += -g -O0
 debug: $(TARGET)
 
 $(TARGET): $(OBJECTS)
-	$(CXX) $(OBJECTS) -o $(TARGET)
+	$(CXX) $(OBJECTS) -o $(TARGET) $(LDLIBS)
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp | $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@

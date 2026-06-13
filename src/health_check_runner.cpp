@@ -19,7 +19,8 @@ void HealthCheckRunner::run(const Config &config) {
     for (const HealthCheckResult &result : results) {
         if (result.success) {
             logger->info(
-                "['{}{}'] OK | status codes: '{}' | retries: '{}' | latencies: '{}' ms",
+                "[ {} ] '{}{}' | status codes: '{}' | retries: '{}' | latencies: '{}' ms",
+                TextFormatter::format_green("OK"),
                 result.url,
                 result.path,
                 result.status_codes | std::views::transform([](int code) { return std::to_string(code); }) | std::views::join_with(std::string_view{", "}) | std::ranges::to<std::string>(),
@@ -28,7 +29,8 @@ void HealthCheckRunner::run(const Config &config) {
             );
         } else {
             logger->warn(
-                "['{}{}'] FAIL | status codes='{}' | retries: '{}' | latencies: '{}' ms | status messages: '{}'",
+                "[ {} ] '{}{}' | status codes='{}' | retries: '{}' | latencies: '{}' ms | status messages: '{}'",
+                TextFormatter::format_red("FAIL"),
                 result.url,
                 result.path,
                 result.status_codes | std::views::transform([](int code) { return std::to_string(code); }) | std::views::join_with(std::string_view{", "}) | std::ranges::to<std::string>(),
@@ -47,7 +49,11 @@ std::vector<std::unique_ptr<IEndpointMonitor>> HealthCheckRunner::build_monitors
     monitors.reserve(config.get_apps().size());
 
     for (const Config::App &app : config.get_apps()) {
-        monitors.emplace_back(monitor_factory(app));
+        if (app.active == true) {
+            monitors.emplace_back(monitor_factory(app));
+        } else {
+            logger->warn("App {} isn't active, ignoring...", app.name);
+        }
     }
 
     return monitors;

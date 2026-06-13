@@ -6,6 +6,8 @@
 #include <filesystem>
 #include <regex>
 
+#include "../include/text_formatter.hpp"
+
 #define APPLICATION_NAME "Webapp monitor tool"
 
 class Config {
@@ -21,6 +23,7 @@ public:
         std::string name;
         std::string url;
         std::string path;
+        bool active;
         std::vector<std::string> admins;
         std::string request_type;
         int healthy_response_status_code;
